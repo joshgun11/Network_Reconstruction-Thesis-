@@ -1,13 +1,16 @@
+from multiprocessing.spawn import prepare
 import tensorflow as tf
 from sklearn.model_selection import train_test_split
 import numpy as np
 from sklearn.cluster import AgglomerativeClustering
 import pandas as pd
 import matplotlib.pyplot as plt
+from preapre_data import KData
 from train import KTrain
 from parsers import KParseArgs
 import sys
 import os
+
 class Sensitiviy_Analysis():
 
     def __init__(self) -> None:
@@ -64,11 +67,12 @@ class Sensitiviy_Analysis():
 
         return labels
 
-    def apply_method(self,args,node):
+    def apply_method(self,args,pairs,node):
         print('Process is going for node: '+str(node))
         train_model = KTrain()
+        
 
-        x,y,model = train_model.train(args,node)
+        x,y,model = train_model.train(args,pairs,node)
         scores_dict = self.feature_importance(x,y,model)
         results = self.prepare_scores(scores_dict)
          
@@ -78,11 +82,13 @@ class Sensitiviy_Analysis():
 if __name__=="__main__":
     method = Sensitiviy_Analysis()
     parser = KParseArgs()
+    prepare_Data = KData()
     args = parser.parse_args()
 
     flag = len(sys.argv) == 1
+    pairs = prepare_Data.prepare_data(args.data)
 
-    labels = method.apply_method(args,args.node)
+    labels = method.apply_method(args,pairs,args.node)
     
     print(labels)
 

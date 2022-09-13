@@ -1,7 +1,7 @@
 venv
 .package
 .DS_Store
-thesis
+th_env
 .csv
 *csv
 *__pycache*

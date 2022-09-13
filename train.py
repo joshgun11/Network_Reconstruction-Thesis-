@@ -12,14 +12,15 @@ class KTrain():
 
 
 
-    def train(self,args,node):
+    def train(self,args,pairs,node):
 
         model_generator = Kmodel()
-        data_selector = KData()
+        
        
+        x = pairs[node][0]
+        y = pairs[node][1]
         
         
-        x,y = data_selector.single_experiment(args.data,node)
         model = model_generator.main_model(x.shape[1])
 
         callbacks = [EarlyStopping(monitor="val_loss",patience=15,verbose=1,
@@ -37,10 +38,13 @@ class KTrain():
 if __name__=="__main__":
     train_model = KTrain()
     parser = KParseArgs()
+    data_selector = KData()
     args = parser.parse_args()
 
     flag = len(sys.argv) == 1
+    pairs = data_selector.prepare_data(args.data)
 
-    train_model.train(args,args.node)
+
+    train_model.train(args,pairs,args.node)
 
         

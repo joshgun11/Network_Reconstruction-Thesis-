@@ -18,15 +18,15 @@ class Reconstruction():
 
     def construct_graph(self,args):
         method = Sensitiviy_Analysis()
+        prepare_data = KData()
         data = args.data
-        data = pd.read_csv('data/'+data)
-        nodes = list(data.columns)
+        pairs = prepare_data.prepare_data(data)
+        df = pd.read_csv('data/'+data)
+        nodes = list(df.columns)
         predicted_matrix = []
-        for node in nodes:
-            predicted_labels = method.apply_method(args,int(node))
-            
 
-           
+        for node in nodes:
+            predicted_labels = method.apply_method(args,pairs,int(node))
             predicted_labels = list(predicted_labels)
             predicted_labels.insert(int(node), 0)
             #predicted_labels = np.array(predicted_labels)
