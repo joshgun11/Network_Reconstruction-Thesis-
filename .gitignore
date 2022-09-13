@@ -1,0 +1,8 @@
+venv
+.package
+.DS_Store
+thesis
+.csv
+*csv
+*png
+*__pycache*
