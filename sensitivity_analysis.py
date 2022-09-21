@@ -16,22 +16,21 @@ class Sensitiviy_Analysis():
     def __init__(self) -> None:
         pass
 
-    def feature_importance(self,X,y,model):
-
-        results = {}
+    def feature_importance(self,x,y,X_test,model):
+        features = list(x.columns)
+        predictions = model.predict(X_test)
+        importances = {}
+        for var in features:
+            X_train,X_test,y_train,y_test = train_test_split(x,y,test_size = 0.33,random_state = 43,stratify = y)
+            X_test[var] = np.random.permutation(X_test[var])
         
-
-        for column in list(X.columns):
-            X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=.33, random_state=7,stratify=y)
-            X_test[column] = 0
-            X_test = np.array(X_test)
-            acc = model.evaluate(X_test,y_test)[1]
-            preds = tf.keras.activations.sigmoid(model.predict(X_test))
-            acc = acc*100
-            acc = 100-acc
-            results[column] = acc
+            var_predictions = model.predict(X_test)
         
-        return results
+            s_p = np.abs(predictions-var_predictions)
+            s_p = s_p.sum()
+            s_p = s_p/X_train.shape[0]
+            importances[str(var)]=s_p
+        return importances 
 
     def prepare_scores(self,scores_dict):
         results = []
@@ -72,12 +71,12 @@ class Sensitiviy_Analysis():
         train_model = KTrain()
         
 
-        x,y,model = train_model.train(args,pairs,node)
-        scores_dict = self.feature_importance(x,y,model)
+        x,y,X_test,model = train_model.train(args,pairs,node)
+        scores_dict = self.feature_importance(x,y,X_test,model)
         results = self.prepare_scores(scores_dict)
          
         labels = self.clustering(args,results,scores_dict,plot=args.plot_cluster,node = node)
-        return labels
+        return labels,results
 
 if __name__=="__main__":
     method = Sensitiviy_Analysis()
